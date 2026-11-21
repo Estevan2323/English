@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mind the Gap: England Quiz</title>
+<style>
+:root{--bg1:#dfe9ff;--bg2:#ffe3e8;--card:#fff;--ink:#14213d;--mute:#5a6785;--red:#e0253a;--blue:#2f6fed;--navy:#1b2a6b;--ok:#12a150;--okbg:#dcf6e6;--badbg:#ffe0e4;--line:#d5def2;--soft:#f2f6ff;--gold:#ffb703;--on:#fff}
+@media (prefers-color-scheme:dark){:root{--bg1:#0b1230;--bg2:#2a0f1c;--card:#151d3b;--ink:#eef2ff;--mute:#a4b2d8;--red:#ff5c70;--blue:#6aa0ff;--navy:#8fb0ff;--ok:#4be08f;--okbg:#0f3a28;--badbg:#4a1a24;--line:#2b3a68;--soft:#1c2750;--gold:#ffc83d;--on:#0b1230}}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,var(--bg1),var(--bg2)) fixed;color:var(--ink);font-family:"Trebuchet MS",system-ui,sans-serif;line-height:1.5;min-height:100vh;display:flex;justify-content:center;padding:16px}
+main{width:100%;max-width:620px}
+header{margin:10px 0 18px}
+h1{font-size:1.8rem;font-weight:800;margin:0;line-height:1.1;color:var(--navy)}
+.sub{color:var(--mute);font-size:.9rem;margin:4px 0 0}
+.card{background:var(--card);border-radius:18px;padding:22px;border-top:8px solid var(--red);box-shadow:0 10px 30px rgba(27,42,107,.15);position:relative}
+.card::before{content:"";position:absolute;left:0;right:0;top:-8px;height:8px;border-radius:18px 18px 0 0;background:linear-gradient(90deg,var(--navy) 0 33%,#fff 33% 66%,var(--red) 66%)}
+.line{display:flex;align-items:center;margin:0 0 18px}
+.stop{width:12px;height:12px;border-radius:50%;border:3px solid var(--blue);background:var(--card);flex:none}
+.stop.done{background:var(--blue)}
+.stop.now{border-color:var(--red);background:var(--red);transform:scale(1.3)}
+.seg{height:4px;background:var(--line);flex:1}
+.seg.done{background:var(--blue)}
+.meta{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;margin-bottom:10px;gap:8px;flex-wrap:wrap}
+.cat{background:var(--navy);color:var(--on);border-radius:999px;padding:3px 14px;font-weight:700}
+.pts{background:var(--gold);color:#3a2a00;border-radius:999px;padding:3px 14px;font-weight:800}
+.q{font-size:1.3rem;font-weight:700;line-height:1.35;margin:6px 0}
+.es{color:var(--mute);font-size:.95rem;margin:4px 0 0;font-style:italic}
+.opts{display:grid;gap:10px;margin:18px 0}
+button{font:inherit;color:inherit;cursor:pointer}
+.opt{text-align:left;background:var(--soft);border:2px solid var(--line);border-radius:12px;padding:12px 14px;font-weight:700;font-size:1rem;display:flex;gap:12px;align-items:center}
+.opt:hover:not(:disabled){border-color:var(--blue);background:var(--card);transform:translateX(3px)}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.opt .k{width:28px;height:28px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:.85rem;flex:none}
+.opt.right{background:var(--okbg);border-color:var(--ok)}
+.opt.right .k{background:var(--ok)}
+.opt.wrong{background:var(--badbg);border-color:var(--red)}
+.opt.wrong .k{background:var(--red)}
+.fact{border-left:6px solid var(--ok);background:var(--okbg);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:.95rem}
+.fact.bad{border-color:var(--red);background:var(--badbg)}
+.fact b{display:block;margin-bottom:2px}
+.btn{background:linear-gradient(90deg,var(--red),#ff6b4a);color:#fff;border:0;border-radius:12px;padding:12px 24px;font-weight:800;font-size:1rem;box-shadow:0 4px 12px rgba(224,37,58,.35)}
+.btn:hover{filter:brightness(1.07)}
+.tool{background:transparent;border:2px solid var(--line);border-radius:999px;padding:4px 14px;font-size:.85rem;font-weight:700}
+.tool[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.hidden{display:none}
+.big{font-size:3.4rem;font-weight:800;line-height:1;margin:6px 0;color:var(--navy)}
+.badge{display:inline-block;background:var(--gold);color:#3a2a00;border-radius:8px;padding:4px 14px;font-weight:800;margin:6px 0 12px}
+.review{margin:14px 0;padding:0;list-style:none;display:grid;gap:6px;font-size:.9rem}
+.review .y{color:var(--ok);font-weight:700}.review .n{color:var(--red);font-weight:700}
+@media (prefers-reduced-motion:no-preference){.opt,.stop{transition:all .15s}}
+</style>
+</head>
+<body>
+<main>
+  <header><h1>Mind the Gap</h1><p class="sub">An England quiz to practise your English</p></header>
+
+  <section class="card" id="start">
+    <p class="q">Ready to travel across England?</p>
+    <p class="es">3 preguntas al azar sobre películas, lugares, cultura, comida e historia de Inglaterra. Cada partida es diferente.</p>
+    <div style="margin:16px 0"><button class="tool" id="tr1" aria-pressed="true">Español: ON</button></div>
+    <button class="btn" id="go">Start the journey</button>
+    <p class="sub" id="best" style="margin-top:14px"></p>
+  </section>
+
+  <section class="card hidden" id="game">
+    <div class="line" id="line" aria-hidden="true"></div>
+    <div class="meta"><span class="cat" id="cat"></span><span class="pts" id="score"></span></div>
+    <p class="q" id="q" aria-live="polite"></p>
+    <p class="es" id="qes"></p>
+    <div class="opts" id="opts"></div>
+    <div id="fb" class="hidden"></div>
+    <div style="margin-bottom:12px"><button class="tool" id="tr2" aria-pressed="true">Español</button></div>
+    <button class="btn hidden" id="next">Next stop</button>
+  </section>
+
+  <section class="card hidden" id="end">
+    <p class="sub">Final score</p>
+    <p class="big" id="fs"></p>
+    <span class="badge" id="rank"></span>
+    <p class="es" id="rankes"></p>
+    <ul class="review" id="review"></ul>
+    <button class="btn" id="again">Play again</button>
+  </section>
+</main>
+
+<script>
+// Formato: [categoría, pregunta EN, pregunta ES, correcta, mala1, mala2, mala3, dato EN, dato ES, palabra nueva]
+const Q=[
+["Movies","Which London station has Platform 9¾ in the Harry Potter films?","¿Qué estación de Londres tiene el Andén 9¾ en las películas de Harry Potter?","King’s Cross","Victoria","Waterloo","Paddington","At King’s Cross you can take a photo with a trolley half-way into the wall.","En King’s Cross puedes tomarte una foto con un carrito que entra a medias en la pared.","trolley = carrito"],
+["Movies","Where does Paddington Bear come from?","¿De dónde viene el oso Paddington?","Peru","Brazil","Spain","Canada","He arrives in London with a label that says “Please look after this bear.”","Llega a Londres con una etiqueta que dice “Por favor cuiden a este oso”.","label = etiqueta"],
+["Movies","Which British actor plays the funny character Mr. Bean?","¿Qué actor británico interpreta al gracioso Mr. Bean?","Rowan Atkinson","Hugh Grant","Daniel Craig","Tom Hardy","Mr. Bean makes people laugh without speaking much.","Mr. Bean hace reír a la gente casi sin hablar.","to laugh = reír"],
+["Movies","Which English writer wrote “The Lord of the Rings”?","¿Qué escritor inglés escribió “El Señor de los Anillos”?","J.R.R. Tolkien","Roald Dahl","George Orwell","Agatha Christie","Tolkien was a professor at Oxford University.","Tolkien fue profesor en la Universidad de Oxford.","writer = escritor"],
+["Movies","Sherlock Holmes lives at 221B ____ Street in London.","Sherlock Holmes vive en la calle 221B ____ de Londres.","Baker","Bakery","Butcher","Cook","Today there is a museum at that address.","Hoy hay un museo en esa dirección.","address = dirección"],
+["Movies","Which British secret agent has the code number 007?","¿Qué agente secreto británico tiene el número clave 007?","James Bond","Sherlock Holmes","Mr. Bean","Paddington","The first Bond film came out in 1962.","La primera película de Bond salió en 1962.","secret agent = agente secreto"],
+["Movies","What colour is the Hogwarts Express train in Harry Potter?","¿De qué color es el tren Hogwarts Express en Harry Potter?","Red","Blue","Green","Black","It travels from London to the magic school.","Viaja de Londres a la escuela de magia.","train = tren"],
+["Movies","In “Alice in Wonderland”, Alice follows a white ____ down a hole.","En “Alicia en el País de las Maravillas”, Alicia sigue a un ____ blanco por un agujero.","rabbit","cat","horse","bird","The book was written by Lewis Carroll in 1865.","El libro lo escribió Lewis Carroll en 1865.","hole = agujero"],
+["Movies","In the film “Mary Poppins”, she flies using a ____.","En la película “Mary Poppins”, ella vuela usando un ____.","umbrella","balloon","broom","kite","British people carry umbrellas because it often rains.","Los británicos llevan paraguas porque llueve seguido.","umbrella = paraguas"],
+["Movies","Wallace and Gromit, the British cartoon characters, love ____.","Wallace y Gromit, los personajes británicos de animación, aman el ____.","cheese","pizza","chocolate","fish","Wallace always says: “Cracking cheese, Gromit!”","Wallace siempre dice: “¡Queso buenísimo, Gromit!”","cracking = buenísimo (UK)"],
+["Places","What is the name of the big bell in the clock tower at the Houses of Parliament?","¿Cómo se llama la gran campana de la torre del reloj del Parlamento?","Big Ben","Great Tom","Little John","Tall Tim","Big Ben is the bell. The tower is called the Elizabeth Tower.","Big Ben es la campana. La torre se llama Torre Elizabeth.","bell = campana"],
+["Places","Which river runs through the centre of London?","¿Qué río atraviesa el centro de Londres?","The Thames","The Severn","The Mersey","The Avon","The Thames is about 346 km long.","El Támesis mide unos 346 km.","river = río"],
+["Places","Stonehenge is a famous circle of ____ in the south of England.","Stonehenge es un famoso círculo de ____ en el sur de Inglaterra.","big stones","old trees","red houses","tall bells","It is about 5,000 years old.","Tiene unos 5,000 años.","stone = piedra"],
+["Places","Where does the King live when he is in London?","¿Dónde vive el Rey cuando está en Londres?","Buckingham Palace","Big Ben","Tower Bridge","Hyde Park","Guards in red coats stand outside the palace.","Guardias con abrigos rojos están afuera del palacio.","guard = guardia"],
+["Places","Which bridge in London opens in the middle to let tall ships pass?","¿Qué puente de Londres se abre en el centro para dejar pasar barcos altos?","Tower Bridge","London Bridge","Big Bridge","Queen’s Bridge","People often confuse it with London Bridge.","La gente suele confundirlo con London Bridge.","bridge = puente"],
+["Places","The London Eye is a giant ____ beside the River Thames.","El London Eye es una enorme ____ junto al río Támesis.","Ferris wheel","roller coaster","statue","clock","A full turn takes about 30 minutes.","Una vuelta completa dura unos 30 minutos.","wheel = rueda"],
+["Places","Oxford and ____ are the two most famous universities in England.","Oxford y ____ son las dos universidades más famosas de Inglaterra.","Cambridge","Manchester","Leeds","Bristol","Oxford began teaching around the year 1096.","Oxford empezó a enseñar hacia el año 1096.","university = universidad"],
+["Places","What do Londoners call their underground train system?","¿Cómo llaman los londinenses a su sistema de trenes subterráneos?","The Tube","The Pipe","The Tunnel","The Metro","“Mind the gap!” warns you about the space between train and platform.","“Mind the gap!” te avisa del espacio entre el tren y el andén.","gap = espacio"],
+["Places","Which northern English city is famous for its Minster and old city walls?","¿Qué ciudad del norte de Inglaterra es famosa por su Minster y sus murallas?","York","Brighton","Bath","Dover","York was founded by the Romans in the year 71.","York fue fundada por los romanos en el año 71.","wall = muro"],
+["Places","Which seaside city in the south has a famous pier and a pebble beach?","¿Qué ciudad costera del sur tiene un famoso muelle y una playa de piedritas?","Brighton","York","Oxford","Leeds","Many Londoners go there for a day at the sea.","Muchos londinenses van ahí a pasar un día al mar.","pier = muelle"],
+["Places","The White Cliffs of Dover are made of ____.","Los Acantilados Blancos de Dover están hechos de ____.","chalk","sand","salt","snow","They face France across the English Channel.","Miran hacia Francia a través del Canal de la Mancha.","cliff = acantilado"],
+["Places","Which English city is famous for its ancient Roman baths?","¿Qué ciudad inglesa es famosa por sus antiguos baños romanos?","Bath","Leeds","Hull","Derby","The city’s name comes from those baths.","El nombre de la ciudad viene de esos baños.","bath = baño"],
+["Places","Hadrian’s Wall in the north of England was built by the ____.","El Muro de Adriano, en el norte de Inglaterra, fue construido por los ____.","Romans","Vikings","Normans","Greeks","It is about 118 km long.","Mide unos 118 km de largo.","built = construido"],
+["Places","The Lake District is a national park famous for its lakes and ____.","El Distrito de los Lagos es un parque nacional famoso por sus lagos y ____.","mountains","deserts","beaches","jungles","The poet William Wordsworth lived there.","El poeta William Wordsworth vivió ahí.","lake = lago"],
+["Places","Which building in London holds the Crown Jewels?","¿Qué edificio de Londres guarda las Joyas de la Corona?","The Tower of London","Big Ben","The London Eye","St Paul’s Cathedral","Special guards called Beefeaters work there.","Ahí trabajan guardias especiales llamados Beefeaters.","jewel = joya"],
+["Culture","What do many British people drink in the afternoon with biscuits or cake?","¿Qué beben muchos británicos por la tarde con galletas o pastel?","Tea","Orange juice","Cold coffee","Hot chocolate","Afternoon tea became popular in the 1840s.","El té de la tarde se hizo popular en la década de 1840.","afternoon = tarde"],
+["Culture","Which side of the road do people drive on in England?","¿Por qué lado de la calle se maneja en Inglaterra?","The left","The right","The middle","Both sides","The driver sits on the right side of the car.","El conductor se sienta del lado derecho del auto.","left = izquierda"],
+["Culture","What is the British word for a line of people waiting for something?","¿Cuál es la palabra británica para una fila de personas esperando algo?","A queue","A train","A circle","A crowd","Jumping the queue is very rude!","¡Colarse en la fila es muy grosero!","to queue = hacer fila"],
+["Culture","On 5 November, English people watch ____ for Guy Fawkes Night.","El 5 de noviembre, los ingleses ven ____ en la Noche de Guy Fawkes.","fireworks","parades","boat races","snow","The tradition remembers a plot against Parliament in 1605.","La tradición recuerda un complot contra el Parlamento en 1605.","fireworks = fuegos artificiales"],
+["Culture","What colour are the famous double-decker buses in London?","¿De qué color son los famosos autobuses de dos pisos de Londres?","Red","Yellow","Green","Blue","The best seat is at the front of the top floor.","El mejor asiento está al frente del piso de arriba.","floor = piso"],
+["Culture","What do English people pull at Christmas dinner to make a loud bang?","¿Qué jalan los ingleses en la cena de Navidad para que suene un estallido?","Christmas crackers","Fireworks","Balloons","Bells","Inside there is a paper crown and a joke.","Adentro hay una corona de papel y un chiste.","joke = chiste"],
+["Culture","Which sport is played every summer at Wimbledon?","¿Qué deporte se juega cada verano en Wimbledon?","Tennis","Golf","Rugby","Cricket","Players wear white and fans eat strawberries and cream.","Los jugadores visten de blanco y los fans comen fresas con crema.","strawberry = fresa"],
+["Culture","Which sport was named after a school in an English town?","¿Qué deporte tomó su nombre de una escuela en un pueblo inglés?","Rugby","Tennis","Golf","Hockey","Rugby School is in the town of Rugby.","Rugby School está en el pueblo de Rugby.","school = escuela"],
+["Culture","The Ashes is a famous series between England and Australia in which sport?","Las Ashes son una famosa serie entre Inglaterra y Australia en qué deporte?","Cricket","Football","Tennis","Rugby","A match can last up to five days!","¡Un partido puede durar hasta cinco días!","match = partido"],
+["Culture","What is the name of the top football league in England?","¿Cómo se llama la liga de futbol principal de Inglaterra?","The Premier League","The Super League","The Top League","The Royal League","It has 20 teams, such as Arsenal and Liverpool.","Tiene 20 equipos, como Arsenal y Liverpool.","team = equipo"],
+["Language","In British English, what is a “lift”?","En inglés británico, ¿qué es un “lift”?","An elevator","A bicycle","A bus stop","A staircase","Americans say “elevator” instead.","Los estadounidenses dicen “elevator”.","lift = elevador"],
+["Language","In England, a thin fried potato snack sold in a bag is called ____.","En Inglaterra, una botana de papa frita y delgada que se vende en bolsa se llama ____.","crisps","chips","fries","nuggets","Chips in England are thick, like French fries.","Las chips en Inglaterra son gruesas, como papas a la francesa.","crisps = papitas de bolsa"],
+["Language","In British English, what is the “boot” of a car?","En inglés británico, ¿qué es el “boot” de un auto?","The luggage space","The front wheel","The driver’s seat","The horn","Americans call it the “trunk”.","Los estadounidenses lo llaman “trunk”.","luggage = equipaje"],
+["Language","British people often say “cheers”. It can mean ____.","Los británicos dicen mucho “cheers”. Puede significar ____.","thank you","sorry","help","goodbye only","They also say it when they lift a glass.","También lo dicen al levantar una copa.","thank you = gracias"],
+["Language","What is the British word for “apartment”?","¿Cuál es la palabra británica para “apartment”?","Flat","Floor","Hall","Garage","A “flat” is a home on one floor of a building.","Un “flat” es una vivienda en un solo piso de un edificio.","flat = departamento"],
+["Language","In England, a “biscuit” is like a ____.","En Inglaterra, un “biscuit” se parece a una ____.","cookie","cake","bread roll","candy","Many people dip biscuits in their tea.","Mucha gente moja las galletas en su té.","to dip = mojar"],
+["Food","Which meal do many English families eat on Sundays?","¿Qué comida comen muchas familias inglesas los domingos?","A roast dinner","A burrito","Sushi","A hot dog","It has roast meat, potatoes, vegetables and gravy.","Lleva carne asada, papas, verduras y salsa gravy.","gravy = salsa de carne"],
+["Food","Fish and chips is traditionally eaten with salt and ____.","El fish and chips se come tradicionalmente con sal y ____.","vinegar","sugar","honey","lemon juice","It is often wrapped in paper.","A menudo se envuelve en papel.","vinegar = vinagre"],
+["Food","A full English breakfast usually includes baked ____.","Un desayuno inglés completo suele incluir ____ horneados en salsa.","beans","carrots","apples","noodles","It also has eggs, bacon and sausages.","También lleva huevos, tocino y salchichas.","breakfast = desayuno"],
+["Food","Scones are traditionally eaten with jam and ____ cream.","Los scones se comen tradicionalmente con mermelada y crema ____.","clotted","sour","whipped chocolate","salty","This is part of a classic afternoon tea.","Es parte de un té de la tarde clásico.","jam = mermelada"],
+["Food","Which famous British sandwich filling is eaten by Paddington Bear?","¿Qué relleno de sándwich británico come el oso Paddington?","Marmalade","Peanut butter","Ham","Tuna","Marmalade is a jam made from oranges.","La marmalade es una mermelada de naranja.","spread = untar"],
+["History","Who wrote “Romeo and Juliet”?","¿Quién escribió “Romeo y Julieta”?","William Shakespeare","Charles Dickens","Jane Austen","J.K. Rowling","Shakespeare was born in Stratford-upon-Avon in 1564.","Shakespeare nació en Stratford-upon-Avon en 1564.","wrote = escribió"],
+["History","Which English king had six wives?","¿Qué rey inglés tuvo seis esposas?","Henry VIII","Richard III","George V","Edward I","He started the Church of England.","Fundó la Iglesia de Inglaterra.","wife = esposa"],
+["History","Queen Elizabeth II ruled for about how many years?","¿Durante cuántos años reinó aproximadamente la reina Isabel II?","70","30","50","90","She was queen from 1952 until 2022.","Fue reina de 1952 a 2022.","to rule = gobernar"],
+["History","The Great Fire of London happened in which year?","¿En qué año ocurrió el Gran Incendio de Londres?","1666","1766","1566","1866","It started in a bakery on Pudding Lane.","Empezó en una panadería de Pudding Lane.","fire = incendio"],
+["History","Which English nurse is known as “the Lady with the Lamp”?","¿Qué enfermera inglesa es conocida como “la Dama de la Lámpara”?","Florence Nightingale","Mary Poppins","Jane Austen","Agatha Christie","She helped wounded soldiers in the 1850s.","Ayudó a soldados heridos en la década de 1850.","nurse = enfermera"],
+["History","Charles Dickens wrote “Oliver Twist” and “A Christmas ____”.","Charles Dickens escribió “Oliver Twist” y “A Christmas ____”.","Carol","Tree","Dinner","Gift","The story is about a man called Scrooge.","La historia trata de un hombre llamado Scrooge.","carol = villancico"],
+["Music","The Beatles, the most famous British band, came from which city?","The Beatles, la banda británica más famosa, venían de qué ciudad?","Liverpool","Brighton","York","Bath","You can still visit the Cavern Club there.","Todavía puedes visitar el Cavern Club ahí.","band = banda"],
+["Music","Which British singer is famous for the song “Rolling in the Deep”?","¿Qué cantante británica es famosa por la canción “Rolling in the Deep”?","Adele","Madonna","Shakira","Rihanna","She comes from London.","Ella es de Londres.","singer = cantante"]
+];
+const TOTAL=3;
+const $=id=>document.getElementById(id);
+let deck=[],G=[],i=0,score=0,streak=0,locked=false,es=true,log=[];
+const shuffle=a=>{a=a.slice();for(let j=a.length-1;j>0;j--){const k=Math.floor(Math.random()*(j+1));[a[j],a[k]]=[a[k],a[j]]}return a};
+function show(id){["start","game","end"].forEach(x=>$(x).classList.toggle("hidden",x!==id))}
+function best(){try{return +localStorage.getItem("englandBest50")||0}catch(e){return 0}}
+function saveBest(s){try{if(s>best())localStorage.setItem("englandBest50",s)}catch(e){}}
+function setTr(v){
+  es=v;$("tr1").textContent="Español: "+(v?"ON":"OFF");
+  $("tr1").setAttribute("aria-pressed",v);$("tr2").setAttribute("aria-pressed",v);
+  $("qes").classList.toggle("hidden",!v);
+  const el=document.querySelector(".esl");if(el)el.classList.toggle("hidden",!v);
+}
+function header(){$("score").textContent="Q "+(i+1)+"/"+TOTAL+"  |  "+score+" pts"+(streak>1?"  |  streak "+streak:"")}
+function start(){
+  // Mazo aleatorio sin repetir preguntas hasta agotar todas
+  if(deck.length<TOTAL)deck=shuffle(Q.map((_,n)=>n));
+  G=deck.splice(0,TOTAL).map(n=>Q[n]);
+  i=0;score=0;streak=0;log=[];show("game");render();
+}
+function render(){
+  const d=G[i];
+  $("line").innerHTML=G.map((_,n)=>(n?'<div class="seg'+(n<=i?' done':'')+'"></div>':'')+'<div class="stop'+(n<i?' done':n===i?' now':'')+'"></div>').join("");
+  $("cat").textContent=d[0];header();
+  $("q").textContent=d[1];$("qes").textContent=d[2];$("qes").classList.toggle("hidden",!es);
+  locked=false;$("fb").classList.add("hidden");$("next").classList.add("hidden");
+  const o=$("opts");o.innerHTML="";
+  shuffle([3,4,5,6].map((n,k)=>({t:d[n],ok:k===0}))).forEach((x,n)=>{
+    const b=document.createElement("button");
+    b.className="opt";b.innerHTML='<span class="k">'+"ABCD"[n]+'</span><span></span>';
+    b.lastChild.textContent=x.t;b.onclick=()=>pick(b,x.ok);o.appendChild(b);
+  });
+}
+function pick(btn,ok){
+  if(locked)return;locked=true;const d=G[i];
+  [...$("opts").children].forEach(b=>{b.disabled=true;if(b.lastChild.textContent===d[3])b.classList.add("right")});
+  if(ok){score+=10+(streak>=2?5:0);streak++}else{btn.classList.add("wrong");streak=0}
+  log.push({ok,w:d[9]});
+  const f=$("fb");f.className="fact"+(ok?"":" bad");
+  f.innerHTML="<b></b><span></span><div class='esl' style='color:var(--mute);margin-top:6px;font-style:italic'></div><div style='margin-top:6px;font-size:.85rem'><b style='display:inline'>New word: </b><span class='w'></span></div>";
+  f.querySelector("b").textContent=ok?"Correct! Well done.":"Not this time. The answer is “"+d[3]+"”.";
+  f.querySelector("span").textContent=d[7];
+  const el=f.querySelector(".esl");el.textContent=d[8];el.classList.toggle("hidden",!es);
+  f.querySelector(".w").textContent=d[9];
+  header();
+  $("next").textContent=i<TOTAL-1?"Next stop":"See my result";
+  $("next").classList.remove("hidden");$("next").focus();
+}
+function finish(){
+  show("end");
+  const r=score>=35?["Tour Guide of the Year","¡Perfecto! Conoces Inglaterra como un londinense."]
+         :score>=20?["Proper Londoner","¡Muy bien! Ya sabes bastante de Inglaterra."]
+         :score>=10?["Curious Tourist","Vas bien. Juega otra vez con preguntas nuevas."]
+         :["First-Time Visitor","¡Buen comienzo! Cada partida te enseña palabras nuevas."];
+  $("fs").textContent=score;$("rank").textContent=r[0];$("rankes").textContent=r[1];
+  $("review").innerHTML="";
+  log.forEach(l=>{const li=document.createElement("li");li.innerHTML='<span class="'+(l.ok?'y':'n')+'"></span> ';li.firstChild.textContent=l.ok?"Correct:":"Review:";li.appendChild(document.createTextNode(l.w));$("review").appendChild(li)});
+  saveBest(score);
+}
+$("go").onclick=start;
+$("again").onclick=()=>{show("start");$("best").textContent="Best score: "+best()};
+$("next").onclick=()=>{if(i<TOTAL-1){i++;render()}else finish()};
+$("tr1").onclick=()=>setTr(!es);$("tr2").onclick=()=>setTr(!es);
+document.addEventListener("keydown",e=>{
+  const n="abcd".indexOf(e.key.toLowerCase());
+  if(n>-1&&!$("game").classList.contains("hidden")&&!locked&&e.target.tagName!=="BUTTON"){const b=$("opts").children[n];if(b)b.click()}
+});
+$("best").textContent=best()?"Best score: "+best():"";
+</script>
+</body>
+</html>
